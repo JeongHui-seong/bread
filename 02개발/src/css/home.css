@@ -46,3 +46,6 @@
     justify-content: center;
     gap: 8px;
 }
+.like_wrap svg{
+    fill: red;
+}
