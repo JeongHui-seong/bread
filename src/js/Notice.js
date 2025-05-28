@@ -4,7 +4,7 @@ export default class Notice {
         this.render(target);
     }
     template() {
-        return `알림`
+        return `알림(만드는중)`
     }
     render(target) {
         target.innerHTML = this.template();

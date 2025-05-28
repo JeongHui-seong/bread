@@ -1,6 +1,6 @@
 .container{
     width: 740px;
-    margin-top: 120px;
+    margin: 120px 0;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -62,7 +62,6 @@
     font-weight: bold;
     background-color: var(--gray2);
     font-family: 'NanumGothic';
-    margin-bottom: 120px;
     pointer-events: none;
 }
 .fill_id{
