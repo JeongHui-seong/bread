@@ -11,7 +11,7 @@ export default class Login {
 
     template() {
         return `
-            <div class="container">
+            <div class="container" data-page="login">
                 <h3 class = "title">로그인</h3>
                 <div class = "id_container">
                     <label for="id">아이디</label>
@@ -87,8 +87,9 @@ export default class Login {
 
     handleEnterKey = (e) => {
         const $btnLogin = document.getElementById("btn_login");
+        const $dataPage = document.querySelector(".container").getAttribute("data-page");
 
-        if (window.location.hash == "#/login" && e.code == "Enter" && $btnLogin.classList.contains("active")){
+        if ($dataPage == "login" && e.code == "Enter" && $btnLogin.classList.contains("active")){
             e.preventDefault();
             $btnLogin.click();
         }
@@ -96,8 +97,9 @@ export default class Login {
 
     handleNumEnterKey = (e) => {
         const $btnLogin = document.getElementById("btn_login");
+        const $dataPage = document.querySelector(".container").getAttribute("data-page");
 
-        if (window.location.hash == "#/login" && e.code == "NumpadEnter" && $btnLogin.classList.contains("active")){
+        if ($dataPage == "login" && e.code == "NumpadEnter" && $btnLogin.classList.contains("active")){
             e.preventDefault();
             $btnLogin.click();
         }
@@ -117,8 +119,8 @@ export default class Login {
         document.removeEventListener("keydown", this.handleEnterKey);
         document.removeEventListener("keydown", this.handleNumEnterKey);
         $btnLogin.addEventListener("click", this.handleLogin);
-        document.addEventListener("keydown", this.handleEnterKey);
-        document.addEventListener("keydown", this.handleNumEnterKey);
+        document.addEventListener("keydown", this.handleEnterKey.bind(this));
+        document.addEventListener("keydown", this.handleNumEnterKey.bind(this));
     }
 
     render(target) {
