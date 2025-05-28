@@ -46,3 +46,9 @@
     justify-content: center;
     gap: 8px;
 }
+.like_wrap svg{
+    fill: var(--gray4);
+}
+.like_active{
+    fill: var(--point) !important;
+}

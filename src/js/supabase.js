@@ -81,10 +81,50 @@ export default class DB {
             const { data } = await this.supabase
             .from("likes")
             .select("*")
-            .eq("post_id",postID)
+            .eq("post_id", postID);
+
+            return data;
         }
         catch(err){
             console.log(err);
+        }
+    }
+
+    async realtimeFetchLikes(event){
+        try{
+            this.supabase
+            .channel("likes")
+            .on("postgres_changes", { event : "*", schema : "public", table : "likes"}, async () => {
+                await event();
+            })
+            .subscribe();
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    async insertLikes(postID, userKey){
+        try{
+            const { data } = await this.supabase
+            .from("likes")
+            .insert([{post_id : postID, user_key : userKey}])
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
+    async deleteLikes(postID, userkey){
+        try{
+            const { error } = await this.supabase
+            .from("likes")
+            .delete()
+            .eq('post_id', postID)
+            .eq('user_key', userkey)
+        }
+        catch(err){
+            console.log(err)
         }
     }
 }
