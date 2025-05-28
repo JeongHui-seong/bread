@@ -40,8 +40,8 @@ export default class Login {
             if (this.userInfo.length == 0) {
                 alert("해당하는 아이디가 없습니다.");
             } else {
-                localStorage.setItem("username", this.userInfo[0]["user_name"]);
-                localStorage.setItem("userkey", this.userInfo[0]["user_key"]);
+                sessionStorage.setItem("username", this.userInfo[0]["user_name"]);
+                sessionStorage.setItem("userkey", this.userInfo[0]["user_key"]);
                 window.location.hash = "#/"
                 this.userInfo = null;
             }

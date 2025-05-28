@@ -67,7 +67,7 @@ export default class DB {
         try{
             const { data } = await this.supabase
             .from("posts")
-            .insert([{user_key : localStorage.getItem("userkey"), post_content : content}])
+            .insert([{user_key : sessionStorage.getItem("userkey"), post_content : content}])
             return true;
         }
         catch(err){

@@ -15,7 +15,7 @@ export default class Home {
         const postData = await this.db.fetchPosts();
 
         if (postData && postData.length > 0) {
-            const userkey = localStorage.getItem("userkey");
+            const userkey = sessionStorage.getItem("userkey");
 
             this.posts = await Promise.all(postData.map((async (post) => {
                 const likeData = await this.db.fetchLikes(post.post_id) || [];
@@ -77,7 +77,7 @@ export default class Home {
     clickLike(e) {
         const $likeIcon = e.querySelector("svg");
         let dataPostID = e.closest(".post_list").getAttribute("data-post-id");
-        let userKey = localStorage.getItem("userkey");    
+        let userKey = sessionStorage.getItem("userkey");    
 
         if (e.getAttribute("data-likeClicked") == "true"){
             $likeIcon.classList.add("like_active");
@@ -114,7 +114,7 @@ export default class Home {
     }
 
     async render(target) {
-        if (localStorage.getItem("username")) {
+        if (sessionStorage.getItem("username")) {
             await this.fetchPostData();
         } else {
             return;

@@ -40,7 +40,7 @@ const template = `
         </ul>
     </nav>
     <ul class = "user_log">
-        <li class = "go_mypage logout"><a href="#/">${localStorage.getItem("username")}</a></li>
+        <li class = "go_mypage logout"><a href="#/">${sessionStorage.getItem("username")}</a></li>
         <li class = "go_logout logout"><a href="#/login">로그아웃</a></li>
         <li class = "go_login login"><a href="#/login">로그인</a></li>
     </ul>
@@ -85,7 +85,7 @@ class Router {
 
     logoutUser() {
         const $userName = document.querySelector(".go_mypage a");
-        localStorage.removeItem("username");
+        sessionStorage.removeItem("username");
         $userName.textContent = '';
         window.location.hash = "#/login";
     }
@@ -94,10 +94,10 @@ class Router {
         const $logout = document.querySelectorAll(".logout");
         const $login = document.querySelector(".login");
         const $userName = document.querySelector(".go_mypage a");
-        if (localStorage.getItem("username")) {
+        if (sessionStorage.getItem("username")) {
             $logout.forEach((e) => e.classList.add("log_active"));
             $login.classList.remove("log_active");
-            $userName.textContent = localStorage.getItem("username");
+            $userName.textContent = sessionStorage.getItem("username");
         } else {
             $logout.forEach((e) => e.classList.remove("log_active"));
             $login.classList.add("log_active");
@@ -138,7 +138,7 @@ class Router {
 
     render() {
         let currentHash = window.location.hash || "#/";
-        if (!localStorage.getItem("username") && currentHash !== "#/signup") {
+        if (!sessionStorage.getItem("username") && currentHash !== "#/signup") {
             currentHash = "#/login";
         }
         this.target.innerHTML = '<img src="./src/img/svg/loadingicon.svg" alt="loadingicon">';
