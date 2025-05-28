@@ -116,6 +116,11 @@ export default class Signup {
             this.db.InsertUser($signupInpID.value, $signupInpPW.value, $signupInpName.value, $signupInpPN.value);
             alert("회원가입 성공");
             window.location.hash = "#/login";
+            this.IDValid = false;
+            this.NameValid = false;
+            this.PNValid = false;
+            this.PWCheckValid = false;
+            this.PWValid = false;
         });
     }
 
