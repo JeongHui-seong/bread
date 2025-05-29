@@ -141,7 +141,7 @@ class Router {
 
     render() {
         let currentHash = window.location.hash || "#/";
-
+        
         if (!sessionStorage.getItem("username") && currentHash !== "#/signup" && !currentHash.startsWith("#/content")) {
             currentHash = "#/login";
         }

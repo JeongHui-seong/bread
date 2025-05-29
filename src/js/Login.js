@@ -123,10 +123,7 @@ export default class Login {
     }
 
     render(target) {
-        const page = window.location.hash;
-        if (page == "#/login"){
-            target.innerHTML = this.template();
-            this.setEventListener();
-        }
+        target.innerHTML = this.template();
+        this.setEventListener();
     }
 }
