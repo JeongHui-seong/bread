@@ -3,13 +3,12 @@ import DB from "./supabase.js"
 export default class Post {
     constructor(target) {
         this.target = target;
-        this.render(target);
 
         this.db = new DB();
     }
     template() {
         return `
-        <div class="container">
+        <div class="container" data-page="post">
         <textarea name="content" id="content" spellcheck = "false" placeholder="욕설, 비방 등 상대방을 불쾌하게 하는 게시물은 작성하지 말아주세요. "></textarea>
         <button class="btn_submit">글쓰기</button>
         </div>

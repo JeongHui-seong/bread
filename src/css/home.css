@@ -46,6 +46,9 @@
     justify-content: center;
     gap: 8px;
 }
+.reply_wrap{
+    cursor: default;
+}
 .like_wrap svg{
     fill: var(--gray4);
 }

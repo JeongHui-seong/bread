@@ -14,7 +14,6 @@ export default class Signup {
         this.NameValid = false;
         this.PNValid = false;
         this.target = target;
-        this.render(target);
 
         this.db = new DB();
         this.userInfo;
@@ -22,7 +21,7 @@ export default class Signup {
 
     template() {
         return `
-        <div class="container">
+        <div class="container" data-page="signup">
             <h3 class="title">회원가입</h3>
             <div class="id_container wrap">
                 <label for="id">아이디 (영문, 숫자 포함 6글자 이상)</label>

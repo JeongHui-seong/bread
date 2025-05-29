@@ -32,22 +32,22 @@ export default class DB {
         }
     }
 
-    async fetchPosts(){
-        try{
+    async fetchPosts() {
+        try {
             const { data } = await this.supabase
-            .from("posts")
-            .select(`post_content,
+                .from("posts")
+                .select(`post_content,
                 post_created,
                 post_updated,
                 post_id,
                 users(
                     user_name
                 )`
-            )
-            .order("post_created", {ascending: false})
+                )
+                .order("post_created", { ascending: false })
             return data;
         }
-        catch (err){
+        catch (err) {
             console.log(err);
         }
     }
@@ -63,68 +63,146 @@ export default class DB {
         }
     }
 
-    async insertPost(content){
-        try{
+    async insertPost(content) {
+        try {
             const { data } = await this.supabase
-            .from("posts")
-            .insert([{user_key : sessionStorage.getItem("userkey"), post_content : content}])
+                .from("posts")
+                .insert([{ user_key: sessionStorage.getItem("userkey"), post_content: content }])
             return true;
         }
-        catch(err){
+        catch (err) {
             console.log(err);
             return false;
         }
     }
 
-    async fetchLikes(postID){
-        try{
+    async fetchLikes(postID) {
+        try {
             const { data } = await this.supabase
-            .from("likes")
-            .select("*")
-            .eq("post_id", postID);
+                .from("likes")
+                .select("*")
+                .eq("post_id", postID);
 
             return data;
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
     }
 
-    async realtimeFetchLikes(event){
-        try{
+    async realtimeFetchLikes(event) {
+        try {
             this.supabase
-            .channel("likes")
-            .on("postgres_changes", { event : "*", schema : "public", table : "likes"}, async () => {
-                await event();
-            })
-            .subscribe();
+                .channel("likes")
+                .on("postgres_changes",
+                    {
+                        event: "*",
+                        schema: "public",
+                        table: "likes",
+                    }, async () => {
+                        await event();
+                    })
+                .subscribe();
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
     }
 
-    async insertLikes(postID, userKey){
-        try{
+    async realtimeFetchComments(event) {
+        try {
+            this.supabase
+                .channel("comments")
+                .on("postgres_changes",
+                    {
+                        event: "*",
+                        schema: "public",
+                        table: "comments",
+                    }, async () => {
+                        await event();
+                    })
+                .subscribe();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async insertLikes(postID, userKey) {
+        try {
             const { data } = await this.supabase
-            .from("likes")
-            .insert([{post_id : postID, user_key : userKey}])
+                .from("likes")
+                .insert([{ post_id: postID, user_key: userKey }])
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
     }
 
-    async deleteLikes(postID, userkey){
-        try{
+    async deleteLikes(postID, userkey) {
+        try {
             const { error } = await this.supabase
-            .from("likes")
-            .delete()
-            .eq('post_id', postID)
-            .eq('user_key', userkey)
+                .from("likes")
+                .delete()
+                .eq('post_id', postID)
+                .eq('user_key', userkey)
         }
-        catch(err){
+        catch (err) {
             console.log(err)
+        }
+    }
+
+    async fetchContent(postID) {
+        try {
+            const { data } = await this.supabase
+                .from("posts")
+                .select(`post_content,
+                post_created,
+                post_updated,
+                post_id,
+                users(
+                    user_name
+                )
+                    `
+                )
+                .eq("post_id", postID)
+            return data;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async fetchComment(postID) {
+        try {
+            const { data } = await this.supabase
+                .from("comments")
+                .select(`
+                comm_id,
+                comm_content,
+                comm_created,
+                comm_updated,
+                users(
+                    user_name
+                )
+                `)
+                .eq("post_id", postID)
+                .order("comm_created", { ascending: false })
+            return data;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
+    async insertComment(content, userKey, postID) {
+        try {
+            const { data } = await this.supabase
+                .from("comments")
+                .insert([{ comm_content: content, user_key: userKey, post_id: postID }])
+        }
+        catch (err) {
+            console.log(err);
         }
     }
 }

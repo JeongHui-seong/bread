@@ -4,6 +4,7 @@ import Notice from "./Notice.js";
 import Post from "./Post.js";
 import Search from "./Search.js";
 import Signup from "./Signup.js";
+import Content from "./Content.js";
 
 //////////////////APP/////////////////////////
 
@@ -62,6 +63,7 @@ class Router {
         this.post = new Post(this.target);
         this.login = new Login(this.target);
         this.signup = new Signup(this.target);
+        this.content = new Content(this.target);
 
         this.state();
         this.setState();
@@ -74,7 +76,8 @@ class Router {
             { fragment: "#/notice", component: () => this.notice.render(this.target) },
             { fragment: "#/post", component: () => this.post.render(this.target) },
             { fragment: "#/login", component: () => this.login.render(this.target) },
-            { fragment: "#/signup", component: () => this.signup.render(this.target) }
+            { fragment: "#/signup", component: () => this.signup.render(this.target) },
+            { fragment: "#/content/:id", component: (params) => this.content.render(this.target, params.id) }
         ];
     }
 
@@ -139,15 +142,27 @@ class Router {
     render() {
         let currentHash = window.location.hash || "#/";
 
-        if (!sessionStorage.getItem("username") && currentHash !== "#/signup") {
+        if (!sessionStorage.getItem("username") && currentHash !== "#/signup" && !currentHash.startsWith("#/content")) {
             currentHash = "#/login";
         }
         this.target.innerHTML = '<img src="./src/img/svg/loadingicon.svg" alt="loadingicon">';
-        const found = this.routes.find(route => route.fragment == currentHash);
+        const found = this.routes.find(route => {
+            if (route.fragment.includes(":")){
+                const baseRoute = route.fragment.split("/:")[0];
+                return currentHash.startsWith(baseRoute) && currentHash.split("/").length > 2;
+            }
+            return route.fragment == currentHash;
+        });
         if (found) {
-            found.component();
+            let params = {};
+            if (found.fragment.includes(":")){
+                const paramName = found.fragment.split("/:")[1];
+                const paramValue = currentHash.split("/")[2];
+                params[paramName] = paramValue;
+            }
+            found.component(params);
             this.removeCSS();
-            this.loadCSS(found.fragment.substring(2));
+            this.loadCSS(found.fragment.substring(2).split("/:")[0]);
         }
         this.updateUserLogUI();
         this.setEventListener();
@@ -155,7 +170,9 @@ class Router {
 
     setState() {
         this.render();
-        window.addEventListener("hashchange", () => this.render());
+        window.addEventListener("hashchange", () => {
+            this.render();   
+        });
     }
 }
 

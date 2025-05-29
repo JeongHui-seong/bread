@@ -3,7 +3,6 @@ import DB from "./supabase.js";
 export default class Login {
     constructor(target) {
         this.target = target;
-        this.render(target);
 
         this.db = new DB();
         this.userInfo;

@@ -1,0 +1,116 @@
+.container{
+    width: 1000px;
+    border: 1px solid var(--gray2);
+    margin: 80px 0;
+    height: 100%;
+    border-radius: var(--border-radius);
+    padding-bottom: 40px;
+    font-size: var(--normal-font-size);
+}
+.post_wrap{
+    width: 820px;
+    margin: 0 auto;
+}
+.content_box,
+.comment_box,
+.comment_wrap{
+    margin-top: 40px;
+}
+.content_box{
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--gray1);
+}
+.content_box .top_wrap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.content_box .id,
+.comment_list .top_wrap .id{
+    font-weight: bold;
+}
+.content_box .date,
+.comment_list .top_wrap .date{
+    color: var(--gray4);
+    font-size: 14px;
+}
+.content_wrap,
+.bottom_wrap{
+    margin-top: 20px;
+    font-size: var(--normal-font-size);
+}
+.content_box .bottom_wrap,
+.content_box .like_wrap,
+.content_box .reply_wrap{
+    display: flex;
+    align-items: center;
+}
+.content_box .bottom_wrap{
+    gap: 20px;
+}
+.content_box .like_wrap,
+.content_box .reply_wrap{
+    gap: 8px;
+}
+.content_box .reply_wrap{
+    cursor: default;
+}
+.comment_box .parent_wrap{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.comment_box #parent_comment{
+  width: calc(100% - 40px) !important;
+  height: 60px;
+  max-height: 300px;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  resize: none;
+  background-color: var(--gray1);
+  border: none;
+  font-family: "NanumGothic";
+  font-size: var(--normal-font-size);
+  overflow-y: hidden;
+}
+.comment_box #parent_comment::placeholder{
+  color: var(--gray3);
+  opacity: 1;
+}
+.comment_box #parent_comment:focus{
+  outline: none;
+}
+.comment_box .parent_submit{
+    width: 40px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content:end;
+}
+.comment_list{
+    padding: 20px 0;
+    border-bottom: 1px solid var(--gray1);
+}
+.comment_wrap ul{
+    margin-top: 20px;
+}
+.comment_list .top_wrap{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.comment_list .content{
+    margin-top: 12px;
+}
+.comment_list .open_comment{
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--gray4);
+}
+.like_wrap svg{
+    fill: var(--gray4);
+}
+.like_active{
+    fill: var(--point) !important;
+}
