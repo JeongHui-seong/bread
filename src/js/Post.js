@@ -35,7 +35,10 @@ export default class Post {
         });
     }
     render(target) {
-        target.innerHTML = this.template();
-        this.setEventListener();
+        const page = window.location.hash;
+        if (page == "#/post"){
+            target.innerHTML = this.template();
+            this.setEventListener();
+        }
     }
 }

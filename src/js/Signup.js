@@ -202,7 +202,10 @@ export default class Signup {
     }
 
     render(target) {
-        target.innerHTML = this.template();
-        this.setEventListener();
+        const page = window.location.hash;
+        if (page == "#/signup"){
+            target.innerHTML = this.template();
+            this.setEventListener();
+        }
     }
 }

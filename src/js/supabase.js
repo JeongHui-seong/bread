@@ -90,7 +90,7 @@ export default class DB {
         }
     }
 
-    async realtimeFetchLikes(event) {
+    async realtimeFetchLikes(event, option = null) {
         try {
             this.supabase
                 .channel("likes")
@@ -99,8 +99,13 @@ export default class DB {
                         event: "*",
                         schema: "public",
                         table: "likes",
-                    }, async () => {
-                        await event();
+                    }, async (payload) => {
+                        const newID = payload.new?.post_id;
+                        const oldID = payload.old?.post_id;
+                        if (!option || newID == option || oldID == option){
+                            await event();
+                            console.log(payload);
+                        }
                     })
                 .subscribe();
         }
@@ -109,7 +114,7 @@ export default class DB {
         }
     }
 
-    async realtimeFetchComments(event) {
+    async realtimeFetchComments(event, option = null) {
         try {
             this.supabase
                 .channel("comments")
@@ -118,8 +123,13 @@ export default class DB {
                         event: "*",
                         schema: "public",
                         table: "comments",
-                    }, async () => {
-                        await event();
+                    }, async (payload) => {
+                        const newID = payload.new?.post_id;
+                        const oldID = payload.old?.post_id;
+                        if (!option || newID == option || oldID == option){
+                            await event();
+                            console.log(payload);
+                        }
                     })
                 .subscribe();
         }

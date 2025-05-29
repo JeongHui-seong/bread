@@ -6,6 +6,9 @@ export default class Search {
         return `검색(만드는중)`
     }
     render(target) {
-        target.innerHTML = this.template();
+        const page = window.location.hash;
+        if (page == "#/search"){
+            target.innerHTML = this.template();
+        }
     }
 }

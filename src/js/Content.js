@@ -5,14 +5,13 @@ export default class Content {
         this.target = target;
         this.db = new DB();
         this.data = [];
-
-        const postID = window.location.hash.split("/")[2];
     }
     async fetchContentData() {
         const postID = window.location.hash.split("/")[2];
+        const page = window.location.hash.split("/")[1];
         const contentData = await this.db.fetchContent(postID);
 
-        if (contentData && contentData.length > 0) {
+        if (page == "content" && contentData && contentData.length > 0) {
             const userkey = sessionStorage.getItem("userkey");
 
             this.data = await Promise.all(contentData.map((async (post) => {
@@ -156,13 +155,28 @@ export default class Content {
         });
 
         btnParentCommentSubmit.addEventListener("click", ()=>{
-            this.db.insertComment(parentComment.value, userKey, postID);
-            parentComment.value = "";
+            if (parentComment.value == ""){
+                alert("글을 입력해주세요");
+            } else {
+                this.db.insertComment(parentComment.value, userKey, postID);
+                parentComment.value = "";
+            }
         });
     }
     async render(target) {
-        await this.fetchContentData();
-        target.innerHTML = this.template();
-        this.setEventListener();
+        const page = window.location.hash.split("/")[1];
+        const postID = window.location.hash.split("/")[2];
+        console.log(postID);
+        if (page == "content"){
+            this.db.realtimeFetchLikes(async () => {
+                await this.render(this.target);
+            },postID);
+            this.db.realtimeFetchComments(async () => {
+                await this.render(this.target);
+            },postID);
+            await this.fetchContentData();
+            target.innerHTML = this.template();
+            this.setEventListener();
+        }
     }
 }

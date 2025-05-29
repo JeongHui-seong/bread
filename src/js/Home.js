@@ -5,13 +5,16 @@ export default class Home {
         this.target = target;
         this.db = new DB();
         this.posts = [];
+        const page = window.location.hash;
 
-        this.db.realtimeFetchLikes(async () => {
-            await this.render(this.target);
-        });
-        this.db.realtimeFetchComments(async () => {
-            await this.render(this.target);
-        });
+        if (page == "#/"){
+            this.db.realtimeFetchLikes(async () => {
+                await this.render(this.target);
+            });
+            this.db.realtimeFetchComments(async () => {
+                await this.render(this.target);
+            });
+        }
     }
 
     async fetchPostData() {
@@ -123,12 +126,15 @@ export default class Home {
     }
 
     async render(target) {
-        if (sessionStorage.getItem("username")) {
-            await this.fetchPostData();
-        } else {
-            return;
+        const page = window.location.hash;
+        if (page == "#/"){
+            if (sessionStorage.getItem("username")) {
+                await this.fetchPostData();
+            } else {
+                return;
+            }
+            target.innerHTML = this.template();
+            this.setEventListener();
         }
-        target.innerHTML = this.template();
-        this.setEventListener();
     }
 }
