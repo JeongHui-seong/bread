@@ -104,7 +104,7 @@ export default class DB {
                         const oldID = payload.old?.post_id;
                         if (!option || newID == option || oldID == option){
                             await event();
-                            console.log(payload);
+                            // console.log(payload);
                         }
                     })
                 .subscribe();
@@ -128,7 +128,7 @@ export default class DB {
                         const oldID = payload.old?.post_id;
                         if (!option || newID == option || oldID == option){
                             await event();
-                            console.log(payload);
+                            // console.log(payload);
                         }
                     })
                 .subscribe();
@@ -194,7 +194,8 @@ export default class DB {
                 comm_updated,
                 users(
                     user_name
-                )
+                ),
+                comm_parentid
                 `)
                 .eq("post_id", postID)
                 .order("comm_created", { ascending: false })
@@ -205,11 +206,16 @@ export default class DB {
         }
     }
 
-    async insertComment(content, userKey, postID) {
+    async insertComment(content, userKey, postID, commParentid) {
         try {
-            const { data } = await this.supabase
-                .from("comments")
-                .insert([{ comm_content: content, user_key: userKey, post_id: postID }])
+            let query = this.supabase.from("comments")
+            if (content && userKey && postID && commParentid) {
+                query = await query.insert([{ comm_content: content, user_key: userKey, post_id: postID, comm_parentid: commParentid }])
+            } else if (content && userKey && postID) {
+                query = await query.insert([{ comm_content: content, user_key: userKey, post_id: postID }])
+            };
+
+            const { data } = query;
         }
         catch (err) {
             console.log(err);

@@ -20,7 +20,7 @@ export default class Content {
                 const commentData = await this.db.fetchComment(postID) || [];
                 // console.log({ ...post, like_count: likeData.length , userLiked, likeData})
 
-                return { ...post, like_count: likeData.length , userLiked, likeData, commentData};
+                return { ...post, like_count: likeData.length, userLiked, likeData, commentData };
             })));
         } else {
             console.log("데이터 없음");
@@ -41,10 +41,10 @@ export default class Content {
                     </p>
                     </div>
                     <div class="content_wrap">
-                        <p class="content">${this.data[0].post_content.replace(/\n/g, "<br>")}</p>
+                        <p class="content">${this.data[0].post_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
                     </div>
                     <div class="bottom_wrap">
-                        <button class="like_wrap" data-likeClicked="${this.data[0].userLiked ? " true" : "false" }">
+                        <button class="like_wrap" data-likeClicked="${this.data[0].userLiked ? " true" : "false"}">
                             <svg fill="#000000" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                                 xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px"
                                 viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
@@ -72,7 +72,7 @@ export default class Content {
                 </div>
                 <div class="comment_box">
                     <div class="parent_wrap">
-                        <textarea name="parent_comment" id="parent_comment" spellcheck="false" placeholder="댓글을 입력해주세요"></textarea>
+                        <textarea name="parent_comment" id="parent_comment" class="comment_area" spellcheck="false" placeholder="댓글을 입력해주세요"></textarea>
                         <button class="parent_submit">
                             <svg width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z" clip-rule="evenodd"/></svg>
                         </button>
@@ -80,32 +80,65 @@ export default class Content {
                     <div class="comment_wrap">
                         <p>댓글 ${this.data[0].commentData.length}</p>
                         <ul>
-                        ${this.data[0].commentData.length == 0 ? "<li class = 'comment_list'>댓글이 없습니다. 첫 댓글을 작성해주세요!</li>" : 
-                            this.data[0].commentData.map(data =>
-                                `<li class="comment_list" data-comment-id = ${data.comm_id}>
+                        ${this.data[0].commentData.length == 0 ? "<li class = 'comment_list'>댓글이 없습니다. 첫 댓글을 작성해주세요!</li>" :
+                this.data[0].commentData.filter(parent => parent.comm_parentid === null).map(parent =>
+                    `<li class="comment_list parent" data-comment-id = ${parent.comm_id}>
                                 <div class="top_wrap">
-                                    <p class="id">${data.users.user_name}</p>
+                                    <p class="id">${parent.users.user_name}</p>
                                     <p class="date">
-                                        ${data.comm_created.substring(0, 4)}년 
-                                        ${data.comm_created.substring(5, 7)}월
-                                        ${data.comm_created.substring(8, 10)}일 
-                                        ${Number(data.comm_created.substring(11, 13)) + 9}:${data.comm_created.substring(14, 16)}
+                                        ${parent.comm_created.substring(0, 4)}년 
+                                        ${parent.comm_created.substring(5, 7)}월
+                                        ${parent.comm_created.substring(8, 10)}일 
+                                        ${Number(parent.comm_created.substring(11, 13)) + 9}:${parent.comm_created.substring(14, 16)}
                                     </p>
+                                    <div class = "identifier">${"하이"}</div>
                                 </div>
-                                <p class="content">${data.comm_content.replace(/\n/g, "<br>")}</p>
+                                <p class="content">${parent.comm_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
                                 <button class="open_comment">댓글 남기기</button>
+                                <div class="recomm_wrap">
+                                    <textarea name="recomm_comment" id="recomm_comment" class="comment_area" spellcheck="false" placeholder="댓글을 입력해주세요"></textarea>
+                                    <button class="recomm_submit">
+                                        <svg width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </div>
+                                <ul class="child_comment_list">
+                                    ${this.data[0].commentData.filter(child => child.comm_parentid === parent.comm_id)
+                                        .sort((a,b) => new Date(a.comm_created.split('.')[0]) - new Date(b.comm_created.split('.')[0]))
+                                        .map(child =>
+                                        `
+                                        <li class="comment_list" data-comment-id = ${child.comm_id}>
+                                            <div class="top_wrap">
+                                                <p class="id">${child.users.user_name}</p>
+                                                <p class="date">
+                                                    ${child.comm_created.substring(0, 4)}년 
+                                                    ${child.comm_created.substring(5, 7)}월
+                                                    ${child.comm_created.substring(8, 10)}일 
+                                                    ${Number(child.comm_created.substring(11, 13)) + 9}:${child.comm_created.substring(14, 16)}
+                                                </p>
+                                            </div>
+                                            <p class="content">${child.comm_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
+                                            <button class="open_comment">댓글 남기기</button>
+                                            <div class="recomm_wrap">
+                                                <textarea name="recomm_comment" id="recomm_comment" class="comment_area" spellcheck="false" placeholder="댓글을 입력해주세요"></textarea>
+                                                <button class="recomm_submit">
+                                                    <svg width="20px" height="20px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M2.345 2.245a1 1 0 0 1 1.102-.14l18 9a1 1 0 0 1 0 1.79l-18 9a1 1 0 0 1-1.396-1.211L4.613 13H10a1 1 0 1 0 0-2H4.613L2.05 3.316a1 1 0 0 1 .294-1.071z" clip-rule="evenodd"/></svg>
+                                                </button>
+                                            </div>
+                                        </li>`
+                    ).join('')}
+                                </ul>
                             </li>`
-                            ).join('')
-                        }
+                ).join('')
+            }
                         </ul>
                     </div>
                 </div>
             </div>
         </div>`
     }
-    textareaHeight(pc){
-            pc.style.height = "60px";
-            pc.style.height = pc.scrollHeight + "px";
+    textareaHeight(pc) {
+        pc.style.height = "60px";
+        pc.style.height = pc.scrollHeight + "px";
     }
     clickLike(e) {
         const $likeIcon = e.querySelector("svg");
@@ -115,65 +148,100 @@ export default class Content {
 
         e.setAttribute("data-likeClicked", likeClicked ? "true" : "false");
 
-        if (e.getAttribute("data-likeClicked") === "true"){
+        if (e.getAttribute("data-likeClicked") === "true") {
             $likeIcon.classList.add("like_active");
         } else {
             $likeIcon.classList.remove("like_active");
         }
-        
+
         e.removeEventListener("click", this.handleLikeClick);
         e.addEventListener("click", this.handleLikeClick.bind(this, e, $likeIcon, postID, userKey));
     }
-
-    handleLikeClick(e, $likeIcon, postID, userKey){
+    handleLikeClick(e, $likeIcon, postID, userKey) {
         const isLiked = e.getAttribute("data-likeClicked") === "true";
         e.setAttribute("data-likeClicked", isLiked ? "false" : "true");
 
-        if(!isLiked){
+        if (!isLiked) {
             $likeIcon.classList.add("like_active");
             this.db.insertLikes(postID, userKey);
-            this.data[0].like_count +=1;
-        } else{
+            this.data[0].like_count += 1;
+        } else {
             $likeIcon.classList.remove("like_active");
             this.db.deleteLikes(postID, userKey);
-            this.data[0].like_count -=1;
+            this.data[0].like_count -= 1;
         }
 
         e.querySelector("p").textContent = this.data[0].like_count;
     }
-    setEventListener(){
+    recommSubmit(e, userKey, postID) {
+        const parentCommList = e.closest(".parent");
+        const parentCommID = parentCommList.getAttribute("data-comment-id");
+        const thisCommList = e.closest(".comment_list");
+        const recommWrap = thisCommList.querySelector(".recomm_wrap");
+        const recommTextarea = recommWrap.querySelector("#recomm_comment");
+
+        if (recommTextarea.value == "") {
+            alert("글을 입력해주세요");
+        } else {
+            this.db.insertComment(recommTextarea.value, userKey, postID, parentCommID);
+            recommTextarea.value = "";
+            recommWrap.classList.remove("recomm_on");
+        }
+    }
+    setEventListener() {
+        const commArea = document.querySelectorAll(".comment_area");
         const parentComment = document.getElementById("parent_comment");
         const btnParentCommentSubmit = document.querySelector(".parent_submit");
-        const userKey = sessionStorage.getItem("userkey");    
+        const userKey = sessionStorage.getItem("userkey");
         const postID = window.location.hash.split("/")[2];
         const $likeWrap = document.querySelector(".like_wrap");
+        const $btnOpenComm = document.querySelectorAll(".open_comment");
+        const $btnRecommSubmit = document.querySelectorAll(".recomm_submit");
 
         this.clickLike($likeWrap);
-        
-        parentComment.addEventListener("input",()=>{
-            this.textareaHeight(parentComment);
+
+        commArea.forEach((e) => {
+            e.addEventListener("input", () => {
+                this.textareaHeight(e);
+            });
         });
 
-        btnParentCommentSubmit.addEventListener("click", ()=>{
-            if (parentComment.value == ""){
+        btnParentCommentSubmit.addEventListener("click", () => {
+            if (parentComment.value == "") {
                 alert("글을 입력해주세요");
             } else {
                 this.db.insertComment(parentComment.value, userKey, postID);
                 parentComment.value = "";
             }
         });
+
+        $btnOpenComm.forEach((e) => {
+            e.addEventListener("click", () => {
+                const parentCommList = e.closest(".comment_list");
+                const parentCommID = parentCommList.querySelector(".top_wrap .id");
+                const recommWrap = parentCommList.querySelector(".recomm_wrap");
+                const recommWrapTextarea = recommWrap.querySelector(".comment_area");
+                recommWrap.classList.toggle("recomm_on");
+                recommWrapTextarea.value += `@${parentCommID.textContent} `;
+            });
+        });
+
+        $btnRecommSubmit.forEach((e) => {
+            e.addEventListener("click", () => {
+                this.recommSubmit(e, userKey, postID);
+            });
+        });
     }
     async render(target) {
         const page = window.location.hash.split("/")[1];
         const postID = window.location.hash.split("/")[2];
-        console.log(postID);
-        if (page == "content"){
+        if (page == "content") {
             this.db.realtimeFetchLikes(async () => {
                 await this.render(this.target);
-            },postID);
+            }, postID);
             this.db.realtimeFetchComments(async () => {
                 await this.render(this.target);
-            },postID);
+            }, postID);
             await this.fetchContentData();
             target.innerHTML = this.template();
             this.setEventListener();
