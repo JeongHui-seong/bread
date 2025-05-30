@@ -18,7 +18,7 @@ export default class Home {
     }
 
     async fetchPostData() {
-        const postData = await this.db.fetchPosts();
+        const postData = await this.db.fetchContent({});
 
         if (postData && postData.length > 0) {
             const userkey = sessionStorage.getItem("userkey");
@@ -46,7 +46,7 @@ export default class Home {
                     `
                 <li class="post_list" data-post-id=${post.post_id}>
                     <div class="top_wrap">
-                        <button class = "id">${post.users.user_name}</button>
+                        <a href="#/mypage/${post.user_key}" class = "id">${post.users.user_name}</a>
                             <p class = "date">
                             ${post.post_created.substring(0, 4)}년 
                             ${post.post_created.substring(5, 7)}월
@@ -135,6 +135,14 @@ export default class Home {
             }
             target.innerHTML = this.template();
             this.setEventListener();
+            
+            const $nav = document.getElementById("nav");
+            const $navTagA = document.querySelector("#nav li:nth-of-type(2) a");
+            const $navTagSvg = document.querySelector("#nav li:nth-of-type(2) a svg path");
+
+            $nav.querySelectorAll("*").forEach(el => el.removeAttribute("class"));
+            $navTagA.classList.add("a_on");
+            $navTagSvg.classList.add("svg_on");
         }
     }
 }

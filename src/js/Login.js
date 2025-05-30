@@ -125,5 +125,8 @@ export default class Login {
     render(target) {
         target.innerHTML = this.template();
         this.setEventListener();
+        
+        const $nav = document.getElementById("nav");
+        $nav.querySelectorAll("*").forEach(el => el.removeAttribute("class"));
     }
 }

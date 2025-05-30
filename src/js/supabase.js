@@ -32,26 +32,6 @@ export default class DB {
         }
     }
 
-    async fetchPosts() {
-        try {
-            const { data } = await this.supabase
-                .from("posts")
-                .select(`post_content,
-                post_created,
-                post_updated,
-                post_id,
-                users(
-                    user_name
-                )`
-                )
-                .order("post_created", { ascending: false })
-            return data;
-        }
-        catch (err) {
-            console.log(err);
-        }
-    }
-
     async DBIDCheck(id) {
         this.userInfo = await this.fetchUser(id);
         if (this.userInfo.length == 0) {
@@ -162,20 +142,26 @@ export default class DB {
         }
     }
 
-    async fetchContent(postID) {
+    async fetchContent({postID,userKey}) {
         try {
-            const { data } = await this.supabase
-                .from("posts")
-                .select(`post_content,
-                post_created,
-                post_updated,
-                post_id,
-                users(
-                    user_name
-                )
-                    `
-                )
-                .eq("post_id", postID)
+            let query = this.supabase
+                        .from("posts")
+                        .select(`post_content,
+                        post_created,
+                        post_updated,
+                        post_id,
+                        user_key,
+                        users(
+                            user_name
+                        )
+                            `)
+                        .order("post_created", { ascending: false });
+            if(postID){
+                query = query.eq("post_id", postID);
+            } else if (userKey) {
+                query = query.eq("user_key", userKey);
+            }
+            const { data } = await query;
             return data;
         }
         catch (err) {
@@ -192,6 +178,7 @@ export default class DB {
                 comm_content,
                 comm_created,
                 comm_updated,
+                user_key,
                 users(
                     user_name
                 ),

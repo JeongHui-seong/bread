@@ -133,3 +133,15 @@
 .like_active{
     fill: var(--point) !important;
 }
+.identifier{
+    font-size: 12px;
+    color: white;
+    padding: 4px 10px;
+    border-radius: var(--border-radius);
+}
+.mycomment{
+    background-color: var(--point);
+}
+.writer{
+    background-color: var(--gray3);
+}

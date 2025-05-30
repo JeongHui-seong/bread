@@ -5,6 +5,7 @@ import Post from "./Post.js";
 import Search from "./Search.js";
 import Signup from "./Signup.js";
 import Content from "./Content.js";
+import Mypage from "./Mypage.js";
 
 //////////////////APP/////////////////////////
 
@@ -41,14 +42,14 @@ const template = `
         </ul>
     </nav>
     <ul class = "user_log">
-        <li class = "go_mypage logout"><a href="#/">${sessionStorage.getItem("username")}</a></li>
+        <li class = "go_mypage logout"><a href="#/mypage/${sessionStorage.getItem("userkey")}">${sessionStorage.getItem("username")}</a></li>
         <li class = "go_logout logout"><a href="#/login">로그아웃</a></li>
         <li class = "go_login login"><a href="#/login">로그인</a></li>
     </ul>
 </header>
 <main id="main"></main>
 <footer id = "footer">
-
+푸터에 쓸 말 추천받는다 ㅋㅋ
 </footer>
 `
 $app.innerHTML = template;
@@ -64,6 +65,7 @@ class Router {
         this.login = new Login(this.target);
         this.signup = new Signup(this.target);
         this.content = new Content(this.target);
+        this.mypage = new Mypage(this.target);
 
         this.state();
         this.setState();
@@ -77,7 +79,8 @@ class Router {
             { fragment: "#/post", component: () => this.post.render(this.target) },
             { fragment: "#/login", component: () => this.login.render(this.target) },
             { fragment: "#/signup", component: () => this.signup.render(this.target) },
-            { fragment: "#/content/:id", component: (params) => this.content.render(this.target, params.id) }
+            { fragment: "#/content/:id", component: (params) => this.content.render(this.target, params.id) },
+            { fragment: "#/mypage/:id", component: (params) => this.mypage.render(this.target, params.id) }
         ];
     }
 
@@ -171,7 +174,7 @@ class Router {
     setState() {
         this.render();
         window.addEventListener("hashchange", () => {
-            this.render();   
+            this.render();
         });
     }
 }

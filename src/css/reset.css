@@ -79,6 +79,10 @@ button{
     justify-content: center;
     gap: 8px;
     height: 100%;
+    color: var(--gray3);
+}
+#header #nav ul li a svg path{
+    fill: var(--gray3)
 }
 .user_log li{
     display: none;
@@ -114,4 +118,15 @@ button{
     width: 100%;
     height: 70px;
     background-color: var(--gray1);
+}
+.a_on{
+    color: black !important;
+}
+.svg_on{
+    fill: black !important;
+}
+#footer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

@@ -9,7 +9,7 @@ export default class Content {
     async fetchContentData() {
         const postID = window.location.hash.split("/")[2];
         const page = window.location.hash.split("/")[1];
-        const contentData = await this.db.fetchContent(postID);
+        const contentData = await this.db.fetchContent({postID : postID});
 
         if (page == "content" && contentData && contentData.length > 0) {
             const userkey = sessionStorage.getItem("userkey");
@@ -32,7 +32,7 @@ export default class Content {
             <div class="post_wrap" data-post-id = "${this.data[0].post_id}">
                 <div class="content_box">
                     <div class="top_wrap">
-                        <button class="id">${this.data[0].users.user_name}</button>
+                        <a href="#/mypage/${this.data[0].user_key}" class="id">${this.data[0].users.user_name}</a>
                         <p class="date">
                             ${this.data[0].post_created.substring(0, 4)}년 
                             ${this.data[0].post_created.substring(5, 7)}월
@@ -84,14 +84,14 @@ export default class Content {
                 this.data[0].commentData.filter(parent => parent.comm_parentid === null).map(parent =>
                     `<li class="comment_list parent" data-comment-id = ${parent.comm_id}>
                                 <div class="top_wrap">
-                                    <p class="id">${parent.users.user_name}</p>
+                                    <a href="#/mypage/${parent.user_key}"class="id">${parent.users.user_name}</a>
                                     <p class="date">
                                         ${parent.comm_created.substring(0, 4)}년 
                                         ${parent.comm_created.substring(5, 7)}월
                                         ${parent.comm_created.substring(8, 10)}일 
                                         ${Number(parent.comm_created.substring(11, 13)) + 9}:${parent.comm_created.substring(14, 16)}
                                     </p>
-                                    <div class = "identifier">${"하이"}</div>
+                                    ${sessionStorage.getItem("userkey") == parent.user_key ? '<div class = "identifier mycomment">내댓글</div>' : parent.user_key == this.data[0].user_key ? '<div class = "identifier writer">작성자</div>' : ""}
                                 </div>
                                 <p class="content">${parent.comm_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
                                 <button class="open_comment">댓글 남기기</button>
@@ -108,13 +108,14 @@ export default class Content {
                                         `
                                         <li class="comment_list" data-comment-id = ${child.comm_id}>
                                             <div class="top_wrap">
-                                                <p class="id">${child.users.user_name}</p>
+                                                <a href="#/mypage/${child.user_key}" class="id">${child.users.user_name}</a>
                                                 <p class="date">
                                                     ${child.comm_created.substring(0, 4)}년 
                                                     ${child.comm_created.substring(5, 7)}월
                                                     ${child.comm_created.substring(8, 10)}일 
                                                     ${Number(child.comm_created.substring(11, 13)) + 9}:${child.comm_created.substring(14, 16)}
                                                 </p>
+                                                ${sessionStorage.getItem("userkey") == child.user_key ? '<div class = "identifier mycomment">내댓글</div>' : child.user_key == this.data[0].user_key ? '<div class = "identifier writer">작성자</div>' : ""}
                                             </div>
                                             <p class="content">${child.comm_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
                                             <button class="open_comment">댓글 남기기</button>
@@ -222,7 +223,7 @@ export default class Content {
                 const recommWrap = parentCommList.querySelector(".recomm_wrap");
                 const recommWrapTextarea = recommWrap.querySelector(".comment_area");
                 recommWrap.classList.toggle("recomm_on");
-                recommWrapTextarea.value += `@${parentCommID.textContent} `;
+                recommWrapTextarea.value = `@${parentCommID.textContent} `;
             });
         });
 
@@ -245,6 +246,9 @@ export default class Content {
             await this.fetchContentData();
             target.innerHTML = this.template();
             this.setEventListener();
+
+            const $nav = document.getElementById("nav");
+            $nav.querySelectorAll("*").forEach(el => el.removeAttribute("class"));
         }
     }
 }
