@@ -223,4 +223,24 @@ export default class DB {
             console.log(err);
         }
     }
+
+    async deletePost({postID}){
+        try{
+            if (!postID){
+                alert("게시글 삭제 실패");
+                return;
+            }
+            let query = this.supabase.from("posts");
+            if (postID) {
+                query = await query.delete().eq("post_id", postID);
+            };
+
+            const { data } = query;
+            return true;
+        }
+        catch(err){
+            console.log(err);
+            return false;
+        }
+    }
 }

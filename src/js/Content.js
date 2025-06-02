@@ -29,6 +29,13 @@ export default class Content {
     }
     template() {
         return `
+        <div class="alert_box">
+            <p>정말 삭제하시겠습니까?</p>
+            <div class="btn_box">
+                <button class="btn_cancel">아니오</button>
+                <button class="btn_ok">예</button>
+            </div>
+        </div>
         <div class="container" data-page="content">
             <div class="post_wrap" data-post-id = "${this.data[0].post_id}">
                 <div class="content_box">
@@ -95,14 +102,24 @@ export default class Content {
                 this.data[0].commentData.filter(parent => parent.comm_parentid === null).map(parent =>
                     `<li class="comment_list parent" data-comment-id = ${parent.comm_id}>
                                 <div class="top_wrap">
-                                    <a href="#/mypage/${parent.user_key}"class="id">${parent.users.user_name}</a>
-                                    <p class="date">
-                                        ${parent.comm_created.substring(0, 4)}년 
-                                        ${parent.comm_created.substring(5, 7)}월
-                                        ${parent.comm_created.substring(8, 10)}일 
-                                        ${Number(parent.comm_created.substring(11, 13)) + 9}:${parent.comm_created.substring(14, 16)}
-                                    </p>
-                                    ${sessionStorage.getItem("userkey") == parent.user_key ? '<div class = "identifier mycomment">내댓글</div>' : parent.user_key == this.data[0].user_key ? '<div class = "identifier writer">작성자</div>' : ""}
+                                    <div class="left_wrap">
+                                        <a href="#/mypage/${parent.user_key}"class="id">${parent.users.user_name}</a>
+                                        <p class="date">
+                                            ${parent.comm_created.substring(0, 4)}년 
+                                            ${parent.comm_created.substring(5, 7)}월
+                                            ${parent.comm_created.substring(8, 10)}일 
+                                            ${Number(parent.comm_created.substring(11, 13)) + 9}:${parent.comm_created.substring(14, 16)}
+                                        </p>
+                                        ${sessionStorage.getItem("userkey") == parent.user_key ? '<div class = "identifier mycomment">내댓글</div>' : parent.user_key == this.data[0].user_key ? '<div class = "identifier writer">작성자</div>' : ""}
+                                    </div>
+                                    <div class="right_wrap">
+                                        <button class="threedot">
+                                            <svg class="threedot" fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Glyph" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S17.654,13,16,13z" id="XMLID_287_"/><path d="M6,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S7.654,13,6,13z" id="XMLID_289_"/><path d="M26,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S27.654,13,26,13z" id="XMLID_291_"/></svg>
+                                        </button>
+                                        <div class="popup">
+                                            <button class="btn_delete">삭제하기</button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <p class="content">${parent.comm_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
                                 <button class="open_comment">댓글 남기기</button>
@@ -216,12 +233,47 @@ export default class Content {
         const $btnOpenComm = document.querySelectorAll(".open_comment");
         const $btnRecommSubmit = document.querySelectorAll(".recomm_submit");
         const $threeDot = document.querySelector(".threedot");
+        const $contentThreedotWrap = document.querySelector(".content_box .top_wrap .right_wrap");
+        const $commParentThreedotWrap = document.querySelectorAll(".parent>.top_wrap .right_wrap");
+        const $popup = document.querySelector(".content_box .top_wrap .right_wrap .popup");
+        const $alertBox = document.querySelector(".alert_box");
+        const $alertBtnCancel = document.querySelector(".alert_box .btn_box .btn_cancel");
+        const $alertBtnOK = document.querySelector(".alert_box .btn_box .btn_ok");
+        const userComments = this.data[0].commentData.filter(data => data.user_key == userKey);
+        
+        if (userKey == this.data[0].user_key) {
+            $contentThreedotWrap.classList.add("threedot_active");
+        } else {
+            $contentThreedotWrap.classList.remove("threedot_active");
+        }
+
+        $commParentThreedotWrap.forEach($wrap => {
+            const commentID = $wrap.closest(".parent").getAttribute("data-comment-id");
+            const Mine = userComments.some(comment => comment.comm_id == commentID);
+            
+            if (Mine) {
+                $wrap.classList.add("threedot_active");
+            } else {
+                $wrap.classList.remove("threedot_active");
+            }
+        });
+
         
         this.clickLike($likeWrap);
 
         $threeDot.addEventListener("click", (e) => {
-            this.handlePopup(e);
+            e.stopPropagation();
+            this.handlePopup();
         });
+
+        document.addEventListener("click", (e) => {
+            if (!$popup.contains(e.target) && !$threeDot.contains(e.target)){
+                $popup.classList.remove("popup_active");
+            }
+            if (!$alertBox.contains(e.target) && !$popup.contains(e.target)) {
+                $alertBox.classList.remove("alert_active");
+            }
+        })
 
         commArea.forEach((e) => {
             e.addEventListener("input", () => {
@@ -253,6 +305,22 @@ export default class Content {
             e.addEventListener("click", () => {
                 this.recommSubmit(e, userKey, postID);
             });
+        });
+
+        $popup.addEventListener("click",()=>{
+            $alertBox.classList.add("alert_active");
+        });
+
+        $alertBtnCancel.addEventListener("click", (e) => {
+            e.stopPropagation();
+            $alertBox.classList.remove("alert_active");
+        });
+
+        $alertBtnOK.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            await this.db.deletePost({postID : postID});
+            $alertBox.classList.remove("alert_active");
+            window.location.hash = "#/";
         });
     }
     async render(target) {
