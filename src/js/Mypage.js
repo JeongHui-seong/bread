@@ -108,34 +108,37 @@ export default class Mypage {
     let dataPostID = e.closest(".post_list").getAttribute("data-post-id");
     let userKey = sessionStorage.getItem("userkey");
     let post = this.data.find(data => data.post_id == dataPostID);
-    let likeClicked = post.likeData.some(el => el.user_key == userKey);
+    let fetchLikeClicked = post.likeData.some(el => el.user_key == userKey);
 
-    e.setAttribute("data-likeClicked", likeClicked ? "true" : "false");
+    e.setAttribute("data-likeClicked", fetchLikeClicked ? "true" : "false");
 
-    if (e.getAttribute("data-likeClicked") == "true") {
+    if (fetchLikeClicked) {
       $likeIcon.classList.add("like_active");
+    } else {
+      $likeIcon.classList.remove("like_active");
     }
 
     e.removeEventListener("click", this.handleLikeClick);
     e.addEventListener("click", this.handleLikeClick.bind(this, e, $likeIcon, dataPostID, userKey));
   }
 
-  handleLikeClick(e, $likeIcon, dataPostID, userKey) {
-    const isLiked = e.getAttribute("data-likeClicked") == "true";
+  async handleLikeClick(e, $likeIcon, dataPostID, userKey) {
+    const post = this.data.find(p => p.post_id == dataPostID);
+    let fetchLikeClicked = post.likeData.some(el => el.user_key == userKey);
 
-    if (!isLiked) {
+    if (!fetchLikeClicked) {
       $likeIcon.classList.add("like_active");
-      this.db.insertLikes(dataPostID, userKey);
+      await this.db.insertLikes(dataPostID, userKey);
+      post.likeData.push({user_key : userKey});
+      post.like_count += 1;
     } else {
       $likeIcon.classList.remove("like_active");
-      this.db.deleteLikes(dataPostID, userKey);
+      await this.db.deleteLikes(dataPostID, userKey);
+      post.likeData = post.likeData.filter(el => el.user_key !== userKey);
+      post.like_count -= 1;
     }
 
-    const post = this.data.find(p => p.post_id == dataPostID);
-    if (post) {
-      post.like_count += isLiked ? -1 : 1;
-      e.querySelector("p").textContent = post.like_count;
-    }
+    e.querySelector("p").textContent = post.like_count;
   }
   setEventListener() {
     const $likeWrap = document.querySelectorAll(".like_wrap");

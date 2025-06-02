@@ -19,7 +19,7 @@ export default class Search {
             const value = e.target.value.trim();
             this.currentValue = value;
             if (value.length > 0){
-                this.searched = await this.db.searchUser({userName : value});
+                this.searched = await this.db.searchUser({userName : value, userID : value});
             } else {
                 this.searched = [];
             }

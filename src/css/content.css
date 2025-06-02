@@ -25,6 +25,37 @@
     align-items: center;
     justify-content: space-between;
 }
+.content_box .top_wrap .left_wrap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+.content_box .top_wrap .right_wrap{
+    cursor: pointer;
+    position: relative;
+}
+.content_box .top_wrap .right_wrap .popup{
+    position: absolute;
+    width: 100px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.1);
+    display: none;
+}
+.popup_active{
+    display: flex !important;
+}
+.content_box .top_wrap .right_wrap svg{
+    fill: var(--gray4);
+}
 .content_box .id,
 .comment_list .top_wrap .id{
     font-weight: bold;

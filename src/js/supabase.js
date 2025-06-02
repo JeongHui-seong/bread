@@ -21,10 +21,10 @@ export default class DB {
         }
     }
 
-    async searchUser({userName}) {
+    async searchUser({userName, userID}) {
         try{
             let query = this.supabase.from("users").select()
-            if (userName) query = query.ilike("user_name", `%${userName}%`);
+            if (userName && userID) query = query.or(`user_name.ilike.%${userName}%, user_id.ilike.%${userID}%`);
 
             const { data } = await query;
             return data;

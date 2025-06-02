@@ -6,19 +6,6 @@ export default class Home {
         this.db = new DB();
         this.posts = [];
         this.renderTimeout = null;
-
-        // if (page == "#/"){
-        //     this.db.realtimeFetchLikes(async () => {
-        //         clearTimeout(renderTimeout);
-        //         renderTimeout = setTimeout(() => this.render(this.target), 100);
-        //         console.log("렌더링 ok")
-        //     });
-        //     this.db.realtimeFetchComments(async () => {
-        //         clearTimeout(renderTimeout);
-        //         renderTimeout = setTimeout(() => this.render(this.target), 100);
-        //         console.log("렌더링 ok")
-        //     });
-        // }
     }
 
     async fetchPostData() {
@@ -34,7 +21,7 @@ export default class Home {
 
                 // console.log({ ...post, like_count: likeData.length , userLiked, likeData, comment_count : commentData.length})
 
-                return { ...post, like_count: likeData.length , userLiked, likeData, comment_count : commentData.length};
+                return { ...post, like_count: likeData.length, userLiked, likeData, comment_count: commentData.length };
             })));
         } else {
             console.log("데이터 없음");
@@ -51,12 +38,12 @@ export default class Home {
                 <li class="post_list" data-post-id=${post.post_id}>
                     <div class="top_wrap">
                         <a href="#/mypage/${post.user_key}" class = "id">${post.users.user_name}</a>
-                            <p class = "date">
+                        <p class = "date">
                             ${post.post_created.substring(0, 4)}년 
                             ${post.post_created.substring(5, 7)}월
                             ${post.post_created.substring(8, 10)}일 
                             ${Number(post.post_created.substring(11, 13)) + 9}:${post.post_created.substring(14, 16)}
-                            </p>
+                        </p>
                     </div>
                     <a href="#/content/${post.post_id}">
                         <div class="content_wrap">
@@ -89,38 +76,44 @@ export default class Home {
             </div>
             </div>`
     }
-
     clickLike(e) {
         const $likeIcon = e.querySelector("svg");
         let dataPostID = e.closest(".post_list").getAttribute("data-post-id");
-        let userKey = sessionStorage.getItem("userkey");    
+        let userKey = sessionStorage.getItem("userkey");
+        let post = this.posts.find(data => data.post_id == dataPostID);
+        let fetchLikeClicked = post.likeData.some(el => el.user_key == userKey);
 
-        if (e.getAttribute("data-likeClicked") == "true"){
+        e.setAttribute("data-likeClicked", fetchLikeClicked ? "true" : "false");
+
+        if (fetchLikeClicked) {
             $likeIcon.classList.add("like_active");
+        } else {
+            $likeIcon.classList.remove("like_active");
         }
-        
+
         e.removeEventListener("click", this.handleLikeClick);
         e.addEventListener("click", this.handleLikeClick.bind(this, e, $likeIcon, dataPostID, userKey));
     }
 
-    handleLikeClick(e, $likeIcon, dataPostID, userKey){
-        const isLiked = e.getAttribute("data-likeClicked") == "true";
-        e.setAttribute("data-likeClicked", isLiked ? "false" : "true");
-
-        if(!isLiked){
-            $likeIcon.classList.add("like_active");
-            this.db.insertLikes(dataPostID, userKey);
-        } else{
-            $likeIcon.classList.remove("like_active");
-            this.db.deleteLikes(dataPostID, userKey);
-        }
-
+    async handleLikeClick(e, $likeIcon, dataPostID, userKey) {
         const post = this.posts.find(p => p.post_id == dataPostID);
-        if (post) {
-            post.like_count += isLiked ? -1 : 1;
-            e.querySelector("p").textContent = post.like_count;
+        let fetchLikeClicked = post.likeData.some(el => el.user_key == userKey);
+
+        if (!fetchLikeClicked) {
+            $likeIcon.classList.add("like_active");
+            await this.db.insertLikes(dataPostID, userKey);
+            post.likeData.push({ user_key: userKey });
+            post.like_count += 1;
+        } else {
+            $likeIcon.classList.remove("like_active");
+            await this.db.deleteLikes(dataPostID, userKey);
+            post.likeData = post.likeData.filter(el => el.user_key !== userKey);
+            post.like_count -= 1;
         }
+
+        e.querySelector("p").textContent = post.like_count;
     }
+
 
     setEventListener() {
         const $likeWrap = document.querySelectorAll(".like_wrap");
@@ -131,7 +124,7 @@ export default class Home {
 
     async render(target) {
         const page = window.location.hash;
-        if (page == "#/"){
+        if (page == "#/") {
             if (sessionStorage.getItem("username")) {
                 await this.fetchPostData();
             } else {
@@ -149,7 +142,7 @@ export default class Home {
             });
             target.innerHTML = this.template();
             this.setEventListener();
-            
+
             const $nav = document.getElementById("nav");
             const $navTagA = document.querySelector("#nav li:nth-of-type(2) a");
             const $navTagSvg = document.querySelector("#nav li:nth-of-type(2) a svg path");

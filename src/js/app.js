@@ -49,8 +49,8 @@ const template = `
 </header>
 <main id="main"></main>
 <footer id = "footer">
-로그인 후 사용 가능합니다.
-근데 푸터에 쓸 말 추천받는다 ㅋㅋ
+로그인 후 사용 가능합니다.<br>
+사용하신 후기나 피드백, 개선점들 적어주시면 참고해서 수정하겠습니다.
 </footer>
 `
 $app.innerHTML = template;

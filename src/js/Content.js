@@ -33,13 +33,23 @@ export default class Content {
             <div class="post_wrap" data-post-id = "${this.data[0].post_id}">
                 <div class="content_box">
                     <div class="top_wrap">
-                        <a href="#/mypage/${this.data[0].user_key}" class="id">${this.data[0].users.user_name}</a>
-                        <p class="date">
-                            ${this.data[0].post_created.substring(0, 4)}년 
-                            ${this.data[0].post_created.substring(5, 7)}월
-                            ${this.data[0].post_created.substring(8, 10)}일 
-                            ${Number(this.data[0].post_created.substring(11, 13)) + 9}:${this.data[0].post_created.substring(14, 16)}
-                    </p>
+                        <div class="left_wrap">
+                            <a href="#/mypage/${this.data[0].user_key}" class="id">${this.data[0].users.user_name}</a>
+                            <p class="date">
+                                ${this.data[0].post_created.substring(0, 4)}년 
+                                ${this.data[0].post_created.substring(5, 7)}월
+                                ${this.data[0].post_created.substring(8, 10)}일 
+                                ${Number(this.data[0].post_created.substring(11, 13)) + 9}:${this.data[0].post_created.substring(14, 16)}
+                            </p>
+                        </div>
+                        <div class="right_wrap">
+                            <button class="threedot">
+                                <svg class="threedot" fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Glyph" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S17.654,13,16,13z" id="XMLID_287_"/><path d="M6,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S7.654,13,6,13z" id="XMLID_289_"/><path d="M26,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S27.654,13,26,13z" id="XMLID_291_"/></svg>
+                            </button>
+                            <div class="popup">
+                                <button class="btn_delete">삭제하기</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="content_wrap">
                         <p class="content">${this.data[0].post_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
@@ -159,16 +169,18 @@ export default class Content {
         e.removeEventListener("click", this.handleLikeClick);
         e.addEventListener("click", this.handleLikeClick.bind(this, e, $likeIcon, postID, userKey));
     }
-    handleLikeClick(e, $likeIcon, postID, userKey) {
-        const isLiked = e.getAttribute("data-likeClicked") === "true";
+    async handleLikeClick(e, $likeIcon, dataPostID, userKey) {
+        let fetchLikeClicked = this.data[0].likeData.some(element => element.user_key === userKey);
 
-        if (!isLiked) {
+        if (!fetchLikeClicked) {
             $likeIcon.classList.add("like_active");
-            this.db.insertLikes(postID, userKey);
+            await this.db.insertLikes(dataPostID, userKey);
+            this.data[0].likeData.push({ user_key: userKey });
             this.data[0].like_count += 1;
         } else {
             $likeIcon.classList.remove("like_active");
-            this.db.deleteLikes(postID, userKey);
+            await this.db.deleteLikes(dataPostID, userKey);
+            this.data[0].likeData = this.data[0].likeData.filter(el => el.user_key !== userKey);
             this.data[0].like_count -= 1;
         }
 
@@ -181,13 +193,18 @@ export default class Content {
         const recommWrap = thisCommList.querySelector(".recomm_wrap");
         const recommTextarea = recommWrap.querySelector("#recomm_comment");
 
-        if (recommTextarea.value == "") {
+        if (recommTextarea.value.trim() == "") {
             alert("글을 입력해주세요");
         } else {
             this.db.insertComment(recommTextarea.value, userKey, postID, parentCommID);
             recommTextarea.value = "";
             recommWrap.classList.remove("recomm_on");
         }
+    }
+    handlePopup(){
+        const $popup = document.querySelector(".content_box .top_wrap .right_wrap .popup");
+        
+        $popup.classList.toggle("popup_active");
     }
     setEventListener() {
         const commArea = document.querySelectorAll(".comment_area");
@@ -198,8 +215,13 @@ export default class Content {
         const $likeWrap = document.querySelector(".like_wrap");
         const $btnOpenComm = document.querySelectorAll(".open_comment");
         const $btnRecommSubmit = document.querySelectorAll(".recomm_submit");
-
+        const $threeDot = document.querySelector(".threedot");
+        
         this.clickLike($likeWrap);
+
+        $threeDot.addEventListener("click", (e) => {
+            this.handlePopup(e);
+        });
 
         commArea.forEach((e) => {
             e.addEventListener("input", () => {
@@ -208,7 +230,7 @@ export default class Content {
         });
 
         btnParentCommentSubmit.addEventListener("click", () => {
-            if (parentComment.value == "") {
+            if (parentComment.value.trim() == "") {
                 alert("글을 입력해주세요");
             } else {
                 this.db.insertComment(parentComment.value, userKey, postID);
@@ -235,7 +257,6 @@ export default class Content {
     }
     async render(target) {
         const page = window.location.hash.split("/")[1];
-        const postID = window.location.hash.split("/")[2];
         if (page == "content") {
             this.db.realtimeFetchLikes(async () => {
                 clearTimeout(this.renderTimeout);

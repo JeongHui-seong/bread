@@ -150,10 +150,11 @@ export default class Signup {
         this.IDValid = await this.db.DBIDCheck($signupInpID.value);
         if (!this.IDValid) {
             $signupInpID.value = '';
-            this.signupFillID;
+            this.signupFillID();
             this.signupCheckLabel($signupInpID);
             return false;
         } else {
+            this.checkSignupBtn();
             return true;
         }
     };
