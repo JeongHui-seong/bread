@@ -6,9 +6,10 @@ export default class DB {
         this.userInfo;
     }
 
-    async fetchUser(id, pw) {
+    async fetchUser({id, pw, userKey}) {
         try {
             let query = this.supabase.from("users").select()
+            if (userKey) query = query.eq("user_key", userKey);
             if (id) query = query.eq("user_id", id);
             if (id && pw) query = query.eq("user_id", id).eq("user_pw", pw);
 
@@ -152,7 +153,8 @@ export default class DB {
                         post_id,
                         user_key,
                         users(
-                            user_name
+                            user_name,
+                            user_id
                         )
                             `)
                         .order("post_created", { ascending: false });

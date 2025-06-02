@@ -33,7 +33,7 @@ export default class Login {
         this.isLoading = true;
 
         try{
-            this.userInfo = await this.db.fetchUser(id, pw);
+            this.userInfo = await this.db.fetchUser({id : id, pw : pw});
             // console.log(this.userInfo, id, pw);
             // console.log(this.userInfo);
             if (this.userInfo.length == 0) {
