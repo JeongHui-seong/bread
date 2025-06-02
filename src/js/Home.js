@@ -12,12 +12,12 @@ export default class Home {
             this.db.realtimeFetchLikes(async () => {
                 clearTimeout(renderTimeout);
                 renderTimeout = setTimeout(() => this.render(this.target), 100);
-                // console.log("렌더링 ok")
+                console.log("렌더링 ok")
             });
             this.db.realtimeFetchComments(async () => {
                 clearTimeout(renderTimeout);
                 renderTimeout = setTimeout(() => this.render(this.target), 100);
-                // console.log("렌더링 ok")
+                console.log("렌더링 ok")
             });
         }
     }
