@@ -5,21 +5,20 @@ export default class Home {
         this.target = target;
         this.db = new DB();
         this.posts = [];
-        const page = window.location.hash;
-        let renderTimeout = null;
+        this.renderTimeout = null;
 
-        if (page == "#/"){
-            this.db.realtimeFetchLikes(async () => {
-                clearTimeout(renderTimeout);
-                renderTimeout = setTimeout(() => this.render(this.target), 100);
-                console.log("렌더링 ok")
-            });
-            this.db.realtimeFetchComments(async () => {
-                clearTimeout(renderTimeout);
-                renderTimeout = setTimeout(() => this.render(this.target), 100);
-                console.log("렌더링 ok")
-            });
-        }
+        // if (page == "#/"){
+        //     this.db.realtimeFetchLikes(async () => {
+        //         clearTimeout(renderTimeout);
+        //         renderTimeout = setTimeout(() => this.render(this.target), 100);
+        //         console.log("렌더링 ok")
+        //     });
+        //     this.db.realtimeFetchComments(async () => {
+        //         clearTimeout(renderTimeout);
+        //         renderTimeout = setTimeout(() => this.render(this.target), 100);
+        //         console.log("렌더링 ok")
+        //     });
+        // }
     }
 
     async fetchPostData() {
@@ -138,6 +137,16 @@ export default class Home {
             } else {
                 return;
             }
+            this.db.realtimeFetchLikes(async () => {
+                clearTimeout(this.renderTimeout);
+                this.renderTimeout = setTimeout(() => this.render(this.target), 100);
+                console.log("렌더링 ok")
+            });
+            this.db.realtimeFetchComments(async () => {
+                clearTimeout(this.renderTimeout);
+                this.renderTimeout = setTimeout(() => this.render(this.target), 100);
+                console.log("렌더링 ok")
+            });
             target.innerHTML = this.template();
             this.setEventListener();
             

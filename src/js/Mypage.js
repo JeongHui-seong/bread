@@ -4,6 +4,7 @@ export default class Mypage {
   constructor(target) {
     this.target = target;
     this.db = new DB();
+    this.renderTimeout = null;
   }
   async fetchContentData() {
     const userKey = window.location.hash.split("/")[2];
@@ -23,10 +24,10 @@ export default class Mypage {
       console.log("데이터 없음");
     }
   }
-  async fetchMypageuser(){
+  async fetchMypageuser() {
     const userKey = window.location.hash.split("/")[2];
-    const userData = await this.db.fetchUser({userKey : userKey});
-    const userIDName = {userName : userData[0]['user_name'], userID : userData[0]['user_id']};
+    const userData = await this.db.fetchUser({ userKey: userKey });
+    const userIDName = { userName: userData[0]['user_name'], userID: userData[0]['user_id'] };
     return userIDName;
   }
   async template() {
@@ -147,10 +148,14 @@ export default class Mypage {
     const postID = window.location.hash.split("/")[2];
     if (page == "mypage") {
       this.db.realtimeFetchLikes(async () => {
-        await this.render(this.target);
+        clearTimeout(this.renderTimeout);
+        this.renderTimeout = setTimeout(() => this.render(this.target), 100);
+        console.log("렌더링 ok")
       });
       this.db.realtimeFetchComments(async () => {
-        await this.render(this.target);
+        clearTimeout(this.renderTimeout);
+        this.renderTimeout = setTimeout(() => this.render(this.target), 100);
+        console.log("렌더링 ok")
       });
       await this.fetchContentData();
       target.innerHTML = await this.template();

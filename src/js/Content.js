@@ -5,6 +5,7 @@ export default class Content {
         this.target = target;
         this.db = new DB();
         this.data = [];
+        this.renderTimeout = null;
     }
     async fetchContentData() {
         const postID = window.location.hash.split("/")[2];
@@ -237,11 +238,15 @@ export default class Content {
         const postID = window.location.hash.split("/")[2];
         if (page == "content") {
             this.db.realtimeFetchLikes(async () => {
-                await this.render(this.target);
-            }, postID);
+                clearTimeout(this.renderTimeout);
+                this.renderTimeout = setTimeout(() => this.render(this.target), 100);
+                console.log("렌더링 ok")
+            });
             this.db.realtimeFetchComments(async () => {
-                await this.render(this.target);
-            }, postID);
+                clearTimeout(this.renderTimeout);
+                this.renderTimeout = setTimeout(() => this.render(this.target), 100);
+                console.log("렌더링 ok")
+            });
             await this.fetchContentData();
             target.innerHTML = this.template();
             this.setEventListener();
