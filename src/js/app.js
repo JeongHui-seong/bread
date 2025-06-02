@@ -93,6 +93,7 @@ class Router {
     logoutUser() {
         const $userName = document.querySelector(".go_mypage a");
         sessionStorage.removeItem("username");
+        sessionStorage.removeItem("userKey");
         $userName.textContent = '';
         window.location.hash = "#/login";
     }
@@ -101,10 +102,11 @@ class Router {
         const $logout = document.querySelectorAll(".logout");
         const $login = document.querySelector(".login");
         const $userName = document.querySelector(".go_mypage a");
-        if (sessionStorage.getItem("username")) {
+        if (sessionStorage.getItem("username") && sessionStorage.getItem("userkey")) {
             $logout.forEach((e) => e.classList.add("log_active"));
             $login.classList.remove("log_active");
             $userName.textContent = sessionStorage.getItem("username");
+            $userName.setAttribute("href", `#/mypage/${sessionStorage.getItem("userkey")}`);
         } else {
             $logout.forEach((e) => e.classList.remove("log_active"));
             $login.classList.add("log_active");
