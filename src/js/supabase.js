@@ -47,7 +47,7 @@ export default class DB {
     }
 
     async DBIDCheck(id) {
-        this.userInfo = await this.fetchUser(id);
+        this.userInfo = await this.fetchUser({id});
         if (this.userInfo.length == 0) {
             alert('아이디 사용 가능');
             return true;
