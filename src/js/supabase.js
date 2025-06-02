@@ -21,6 +21,19 @@ export default class DB {
         }
     }
 
+    async searchUser({userName}) {
+        try{
+            let query = this.supabase.from("users").select()
+            if (userName) query = query.ilike("user_name", `%${userName}%`);
+
+            const { data } = await query;
+            return data;
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
     async InsertUser(id, pw, name, pn) {
         try {
             const { data } = await this.supabase

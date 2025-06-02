@@ -49,7 +49,8 @@ const template = `
 </header>
 <main id="main"></main>
 <footer id = "footer">
-푸터에 쓸 말 추천받는다 ㅋㅋ
+로그인 후 사용 가능합니다.
+근데 푸터에 쓸 말 추천받는다 ㅋㅋ
 </footer>
 `
 $app.innerHTML = template;
