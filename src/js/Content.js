@@ -160,7 +160,6 @@ export default class Content {
     }
     handleLikeClick(e, $likeIcon, postID, userKey) {
         const isLiked = e.getAttribute("data-likeClicked") === "true";
-        e.setAttribute("data-likeClicked", isLiked ? "false" : "true");
 
         if (!isLiked) {
             $likeIcon.classList.add("like_active");
