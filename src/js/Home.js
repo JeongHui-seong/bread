@@ -6,13 +6,18 @@ export default class Home {
         this.db = new DB();
         this.posts = [];
         const page = window.location.hash;
+        let renderTimeout = null;
 
         if (page == "#/"){
             this.db.realtimeFetchLikes(async () => {
-                await this.render(this.target);
+                clearTimeout(renderTimeout);
+                renderTimeout = setTimeout(() => this.render(this.target), 100);
+                console.log("렌더링 ok")
             });
             this.db.realtimeFetchComments(async () => {
-                await this.render(this.target);
+                clearTimeout(renderTimeout);
+                renderTimeout = setTimeout(() => this.render(this.target), 100);
+                console.log("렌더링 ok")
             });
         }
     }
