@@ -98,7 +98,7 @@ export default class DB {
                         const oldID = payload.old?.post_id;
                         if (!option || newID == option || oldID == option){
                             await event();
-                            console.log(payload);
+                            // console.log(payload);
                         }
                     })
                 .subscribe();
@@ -122,7 +122,7 @@ export default class DB {
                         const oldID = payload.old?.post_id;
                         if (!option || newID == option || oldID == option){
                             await event();
-                            console.log(payload);
+                            // console.log(payload);
                         }
                     })
                 .subscribe();
