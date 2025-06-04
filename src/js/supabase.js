@@ -243,4 +243,23 @@ export default class DB {
             return false;
         }
     }
+    async deleteComment({commentID}){
+        try{
+            if (!commentID){
+                alert("게시글 삭제 실패");
+                return;
+            }
+            let query = this.supabase.from("comments");
+            if (commentID) {
+                query = await query.delete().eq("comm_id", commentID);
+            };
+
+            const { data } = query;
+            return true;
+        }
+        catch(err){
+            console.log(err);
+            return false;
+        }
+    }
 }

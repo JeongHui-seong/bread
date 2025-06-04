@@ -71,6 +71,12 @@ button{
     gap: 40px;
     height: 100%;
 }
+#header #nav ul #logo{
+    width: 52px;
+}
+#header #nav ul #logo img{
+    width: 100%;
+}
 #header #nav ul li{
     height: 100%;
 }

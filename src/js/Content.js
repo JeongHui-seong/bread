@@ -136,14 +136,24 @@ export default class Content {
                                         `
                                         <li class="comment_list" data-comment-id = ${child.comm_id}>
                                             <div class="top_wrap">
-                                                <a href="#/mypage/${child.user_key}" class="id">${child.users.user_name}</a>
-                                                <p class="date">
-                                                    ${child.comm_created.substring(0, 4)}년 
-                                                    ${child.comm_created.substring(5, 7)}월
-                                                    ${child.comm_created.substring(8, 10)}일 
-                                                    ${Number(child.comm_created.substring(11, 13)) + 9}:${child.comm_created.substring(14, 16)}
-                                                </p>
-                                                ${sessionStorage.getItem("userkey") == child.user_key ? '<div class = "identifier mycomment">내댓글</div>' : child.user_key == this.data[0].user_key ? '<div class = "identifier writer">작성자</div>' : ""}
+                                                <div class="left_wrap">
+                                                    <a href="#/mypage/${child.user_key}" class="id">${child.users.user_name}</a>
+                                                    <p class="date">
+                                                        ${child.comm_created.substring(0, 4)}년 
+                                                        ${child.comm_created.substring(5, 7)}월
+                                                        ${child.comm_created.substring(8, 10)}일 
+                                                        ${Number(child.comm_created.substring(11, 13)) + 9}:${child.comm_created.substring(14, 16)}
+                                                    </p>
+                                                    ${sessionStorage.getItem("userkey") == child.user_key ? '<div class = "identifier mycomment">내댓글</div>' : child.user_key == this.data[0].user_key ? '<div class = "identifier writer">작성자</div>' : ""}
+                                                </div>
+                                                <div class="right_wrap">
+                                                    <button class="threedot">
+                                                    <svg class="threedot" fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" enable-background="new 0 0 32 32" id="Glyph" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M16,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S17.654,13,16,13z" id="XMLID_287_"/><path d="M6,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S7.654,13,6,13z" id="XMLID_289_"/><path d="M26,13c-1.654,0-3,1.346-3,3s1.346,3,3,3s3-1.346,3-3S27.654,13,26,13z" id="XMLID_291_"/></svg>
+                                                    </button>
+                                                    <div class="popup">
+                                                        <button class="btn_delete">삭제하기</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <p class="content">${child.comm_content.replace(/@[\w가-힣]+/g, match => `<strong>${match}</strong>`).replace(/\n/g, "<br>")}</p>
                                             <button class="open_comment">댓글 남기기</button>
@@ -218,10 +228,10 @@ export default class Content {
             recommWrap.classList.remove("recomm_on");
         }
     }
-    handlePopup(){
-        const $popup = document.querySelector(".content_box .top_wrap .right_wrap .popup");
+    handlePopup($wrap){
+        const $Popup = $wrap.querySelector(".popup");
         
-        $popup.classList.toggle("popup_active");
+        $Popup.classList.toggle("popup_active");
     }
     setEventListener() {
         const commArea = document.querySelectorAll(".comment_area");
@@ -232,14 +242,15 @@ export default class Content {
         const $likeWrap = document.querySelector(".like_wrap");
         const $btnOpenComm = document.querySelectorAll(".open_comment");
         const $btnRecommSubmit = document.querySelectorAll(".recomm_submit");
-        const $threeDot = document.querySelector(".threedot");
+        const $threeDot = document.querySelectorAll(".threedot");
         const $contentThreedotWrap = document.querySelector(".content_box .top_wrap .right_wrap");
-        const $commParentThreedotWrap = document.querySelectorAll(".parent>.top_wrap .right_wrap");
-        const $popup = document.querySelector(".content_box .top_wrap .right_wrap .popup");
+        const $commThreedotWrap = document.querySelectorAll(".comment_wrap .top_wrap .right_wrap");
         const $alertBox = document.querySelector(".alert_box");
         const $alertBtnCancel = document.querySelector(".alert_box .btn_box .btn_cancel");
         const $alertBtnOK = document.querySelector(".alert_box .btn_box .btn_ok");
         const userComments = this.data[0].commentData.filter(data => data.user_key == userKey);
+        const $popups = document.querySelectorAll(".popup");
+        let commentID = '';
         
         if (userKey == this.data[0].user_key) {
             $contentThreedotWrap.classList.add("threedot_active");
@@ -247,8 +258,8 @@ export default class Content {
             $contentThreedotWrap.classList.remove("threedot_active");
         }
 
-        $commParentThreedotWrap.forEach($wrap => {
-            const commentID = $wrap.closest(".parent").getAttribute("data-comment-id");
+        $commThreedotWrap.forEach($wrap => {
+            const commentID = $wrap.closest(".comment_list").getAttribute("data-comment-id");
             const Mine = userComments.some(comment => comment.comm_id == commentID);
             
             if (Mine) {
@@ -258,22 +269,29 @@ export default class Content {
             }
         });
 
-        
         this.clickLike($likeWrap);
 
-        $threeDot.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.handlePopup();
-        });
+        $threeDot.forEach(e => 
+            e.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if(e.target.closest(".comment_list")){
+                    commentID = e.target.closest(".comment_list").getAttribute("data-comment-id");
+                    this.handlePopup(e.target.closest(".right_wrap"));
+                } else{
+                    this.handlePopup(e.target.closest(".content_box").querySelector(".right_wrap"));
+                }
+            }));
 
         document.addEventListener("click", (e) => {
-            if (!$popup.contains(e.target) && !$threeDot.contains(e.target)){
-                $popup.classList.remove("popup_active");
-            }
-            if (!$alertBox.contains(e.target) && !$popup.contains(e.target)) {
+            $popups.forEach(popup => {
+                if (!popup.contains(e.target) && !$alertBox.contains(e.target)){
+                    popup.classList.remove("popup_active");
+                }
+            });
+            if (!$alertBox.contains(e.target)){
                 $alertBox.classList.remove("alert_active");
             }
-        })
+        });
 
         commArea.forEach((e) => {
             e.addEventListener("input", () => {
@@ -307,9 +325,10 @@ export default class Content {
             });
         });
 
-        $popup.addEventListener("click",()=>{
+        $popups.forEach(popup => popup.addEventListener("click", (e) => {
+            e.stopPropagation();
             $alertBox.classList.add("alert_active");
-        });
+        }));
 
         $alertBtnCancel.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -318,9 +337,13 @@ export default class Content {
 
         $alertBtnOK.addEventListener("click", async (e) => {
             e.stopPropagation();
-            await this.db.deletePost({postID : postID});
+            if (commentID == '') {
+                await this.db.deletePost({postID : postID});
+                window.location.hash = "#/";
+            } else {
+                await this.db.deleteComment({commentID : commentID});
+            }
             $alertBox.classList.remove("alert_active");
-            window.location.hash = "#/";
         });
     }
     async render(target) {
