@@ -13,7 +13,7 @@ export default class Mypage {
 
     if (page == "mypage" && contentData && contentData.length > 0) {
       this.data = await Promise.all(contentData.map((async (data) => {
-        const likeData = await this.db.fetchLikes(data.post_id) || [];
+        const likeData = await this.db.fetchLikes({postID : data.post_id}) || [];
         const userLiked = likeData.some(like => like.user_key == userKey);
         const commentData = await this.db.fetchComment(data.post_id) || [];
         // console.log({ ...data, like_count: likeData.length, userLiked, likeData, commentData })
@@ -153,12 +153,10 @@ export default class Mypage {
       this.db.realtimeFetchLikes(async () => {
         clearTimeout(this.renderTimeout);
         this.renderTimeout = setTimeout(() => this.render(this.target), 100);
-        console.log("렌더링 ok")
       });
       this.db.realtimeFetchComments(async () => {
         clearTimeout(this.renderTimeout);
         this.renderTimeout = setTimeout(() => this.render(this.target), 100);
-        console.log("렌더링 ok")
       });
       await this.fetchContentData();
       target.innerHTML = await this.template();

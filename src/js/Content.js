@@ -16,7 +16,7 @@ export default class Content {
             const userkey = sessionStorage.getItem("userkey");
 
             this.data = await Promise.all(contentData.map((async (post) => {
-                const likeData = await this.db.fetchLikes(postID) || [];
+                const likeData = await this.db.fetchLikes({postID : postID}) || [];
                 const userLiked = likeData.some(like => like.user_key == userkey);
                 const commentData = await this.db.fetchComment(postID) || [];
                 // console.log({ ...post, like_count: likeData.length , userLiked, likeData})
@@ -352,12 +352,10 @@ export default class Content {
             this.db.realtimeFetchLikes(async () => {
                 clearTimeout(this.renderTimeout);
                 this.renderTimeout = setTimeout(() => this.render(this.target), 100);
-                console.log("렌더링 ok")
             });
             this.db.realtimeFetchComments(async () => {
                 clearTimeout(this.renderTimeout);
                 this.renderTimeout = setTimeout(() => this.render(this.target), 100);
-                console.log("렌더링 ok")
             });
             await this.fetchContentData();
             target.innerHTML = this.template();

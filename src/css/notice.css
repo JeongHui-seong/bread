@@ -1,0 +1,26 @@
+.container{
+  width: 740px;
+  margin: 60px 0 80px 0;
+}
+.notice_list{
+  padding: 20px;
+  border-bottom: 1px solid var(--gray1);
+}
+.notice_list .top_wrap{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.notice_list .top_wrap .date{
+  font-size: 14px;
+  color: var(--gray4);
+}
+.notice_list .bottom_wrap{
+  margin-top: 20px;
+}
+.notice_list .bottom_wrap .comment{
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

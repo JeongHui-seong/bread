@@ -70,11 +70,20 @@ export default class DB {
         }
     }
 
-    async fetchLikes(postID) {
+    async fetchLikes({postID}) {
         try {
             const { data } = await this.supabase
                 .from("likes")
-                .select("*")
+                .select(
+                    `
+                    like_created,
+                    like_id,
+                    post_id,
+                    user_key,
+                    users(
+                        user_name
+                    )`
+                )
                 .eq("post_id", postID);
 
             return data;
@@ -197,7 +206,8 @@ export default class DB {
                 users(
                     user_name
                 ),
-                comm_parentid
+                comm_parentid,
+                post_id
                 `)
                 .eq("post_id", postID)
                 .order("comm_created", { ascending: false })
