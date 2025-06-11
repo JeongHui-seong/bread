@@ -40,11 +40,11 @@ export default class Notice {
             return [...likeData, ...commentData];
         });
         const sorted = divNotice.sort((a,b) => new Date(b.created) - new Date(a.created));
+        console.log(sorted)
         return `
         <div class="container">
-            <ul>
-                ${sorted.map(data => {
-                    console.log(data)
+            <ul>${sorted.length == 0 ? `<li class="notice_list">알림이 존재하지 않습니다.</li>` :
+                `${sorted.map(data => {
                     if (data.type == "like") {
                         return `<a href="#/content/${data.postID}">
                             <li class="notice_list">
@@ -78,7 +78,7 @@ export default class Notice {
                         </a>`
                     }
                 }).join('')}
-            </ul>
+            </ul>`}
         </div>
         `
     }
