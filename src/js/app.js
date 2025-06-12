@@ -50,7 +50,7 @@ const template = `
 <main id="main"></main>
 <footer id = "footer">
 로그인 후 사용 가능합니다.<br>
-사용하신 후기나 피드백, 개선점들 적어주시면 참고해서 수정하겠습니다.
+사용하신 후기나 피드백, 개선점들 적어주시면 참고해서 수정하겠습니다.<br>
 회원가입이 꺼려지시는 분들은 ID, PW : everyone123 으로 로그인해주십쇼.
 </footer>
 `
