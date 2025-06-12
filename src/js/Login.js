@@ -22,7 +22,6 @@ export default class Login {
                 </div>
                 <button id="btn_login">로그인하기</button>
                 <div class="wrap">
-                    <a href="#/" class = "link_findpw">비밀번호 찾기</a>
                     <a href="#/signup" class = "link_signup">회원가입</a>
                 </div>
         </div>`
